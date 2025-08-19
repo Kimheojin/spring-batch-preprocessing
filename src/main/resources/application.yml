@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: mongo
+
+---
+spring:
+  config:
+    activate:
+      on-profile: mongo
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb: DEBUG  # MongoDB 쿼리 로그 보기
+    root: INFO
