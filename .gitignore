@@ -38,3 +38,5 @@ out/
 
 ###custom ####
 application-mongo.yml
+application-gemini.yml
+
