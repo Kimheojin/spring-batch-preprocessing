@@ -1,14 +1,21 @@
 spring:
   profiles:
-    active: mongo
+    active: mongo, gemini
 
 ---
 spring:
   config:
     activate:
-      on-profile: mongo
+      on-profile: mongo, gemini
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
     org.springframework.data.mongodb: DEBUG  # MongoDB 쿼리 로그 보기
     root: INFO
+
+
+---
+spring:
+  batch:
+    job:
+      enabled: fasle
