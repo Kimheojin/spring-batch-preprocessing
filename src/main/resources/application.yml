@@ -20,3 +20,30 @@ spring:
     jdbc:
       initialize-schema: always # 메타 데이터 테이블
       schema: classpath:org/springframework/batch/core/schema-@@platform@@.sql
+
+
+---
+spring:
+  # H2 Database 설정
+  datasource:
+    url: jdbc:h2:mem:batchdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  # H2 콘솔 설정
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+
+
+
