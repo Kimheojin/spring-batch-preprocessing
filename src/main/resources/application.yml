@@ -17,6 +17,9 @@ logging:
 ---
 spring:
   batch:
+    job:
+      enabled: false # 자동 실행 X
+      # 명령어나 launcher 같은 거 이용할듯
     jdbc:
       initialize-schema: always # 메타 데이터 테이블
       schema: classpath:org/springframework/batch/core/schema-@@platform@@.sql
