@@ -1,12 +1,12 @@
 spring:
   profiles:
-    active: mongo, gemini
+    active: mongo, gemini, mysql
 
 ---
 spring:
   config:
     activate:
-      on-profile: mongo, gemini
+      on-profile: mongo, gemini, mysql
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
@@ -17,5 +17,6 @@ logging:
 ---
 spring:
   batch:
-    job:
-      enabled: fasle
+    jdbc:
+      initialize-schema: always # 메타 데이터 테이블
+      schema: classpath:org/springframework/batch/core/schema-@@platform@@.sql

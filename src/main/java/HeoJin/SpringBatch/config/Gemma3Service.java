@@ -22,6 +22,9 @@ public class Gemma3Service {
         this.restClient = restClient;
     }
 
+    //https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api?hl=ko#rest
+    // REST 형식 관련
+
     public String generateContent(String prompt) {
         try {
             // Gemma3 API 요청 형식
