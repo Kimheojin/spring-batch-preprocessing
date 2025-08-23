@@ -1,16 +1,62 @@
 package HeoJin.SpringBatch.config;
 
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing // Spring Batch 활성화 되는 듯 (// JobRepository, JobLauncher_ 자동 생성)
+@RequiredArgsConstructor
+@Slf4j
+//@EnableBatchProcessing // 최신 버전에선 자동으로
 public class BatchConfig {
 
-    // 실행 명령, launcher 등으로 Job 단위 실행 가능
-//    @Bean
-//    public Job test
+    private final Gemma3Service gemma3Service;
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
+
+    @Bean
+    public Job testGemini(){
+        return new JobBuilder("testGeminiJob", jobRepository)
+                .start(geminiTestStep())
+                .build();
+    }
+
+    @Bean
+    public Step geminiTestStep() {
+        return new StepBuilder("geminiTestStep", jobRepository)
+                .tasklet(geminiTasklet(), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Tasklet geminiTasklet() {
+        return (contribution, chunkContext) -> {
+            log.info("Gemini API 테스트 시작");
+            
+            String testPrompt = "안녕하세요. 간단한 테스트 메시지입니다.";
+            String response = gemma3Service.generateContent(testPrompt);
+            
+            log.info("Gemini API 응답: {}", response);
+            log.info("Gemini API 테스트 완료");
+            
+            return RepeatStatus.FINISHED;
+        };
+    }
+
+    @Bean
+    public Job testMongo(){
+
+        return null;
+    }
 }
