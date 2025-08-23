@@ -45,6 +45,8 @@ public class Gemma3Service {
             return response;
 
         } catch (Exception e) {
+            // Batch 에러 처리 방식보고 다시 짜야할듯
+            // 메타 테이블 관련 해서 더 보기
             log.error("Error calling Gemma3 API: {}", e.getMessage());
             throw new RuntimeException("Failed to generate content", e);
         }
