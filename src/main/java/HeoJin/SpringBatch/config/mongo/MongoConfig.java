@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.config;
+package HeoJin.SpringBatch.config.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

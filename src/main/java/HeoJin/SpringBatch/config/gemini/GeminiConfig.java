@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.config;
+package HeoJin.SpringBatch.config.gemini;
 
 
 import org.springframework.beans.factory.annotation.Value;

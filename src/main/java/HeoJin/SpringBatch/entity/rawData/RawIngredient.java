@@ -3,10 +3,14 @@ package HeoJin.SpringBatch.entity.rawData;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class Ingredient {
+@Builder
+@Getter
+public class RawIngredient {
     private String ingredient;
     private String quantity;
 }
