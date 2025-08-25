@@ -1,7 +1,5 @@
-package HeoJin.SpringBatch.config;
+package HeoJin.SpringBatch.job.test;
 
-
-import HeoJin.SpringBatch.config.gemini.Gemma3Service;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,19 +13,17 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.transaction.PlatformTransactionManager;
 
-
-
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-//@EnableBatchProcessing // 최신 버전에선 자동으로
-public class BatchConfig {
+public class MongoJobConfig {
+    // tesetMongoJob
 
-    private final Gemma3Service gemma3Service;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final MongoTemplate mongoTemplate;
@@ -35,38 +31,9 @@ public class BatchConfig {
     @Value("${recipe.sites.okitchen.collection-name}")
     private String testCollectionName;
 
-
     @Bean
-    public Job testGemini(){
-        return new JobBuilder("testGeminiJob", jobRepository)
-                .start(geminiTestStep())
-                .build();
-    }
-
-    @Bean
-    public Step geminiTestStep() {
-        return new StepBuilder("geminiTestStep", jobRepository)
-                .tasklet(geminiTasklet(), transactionManager)
-                .build();
-    }
-
-    @Bean
-    public Tasklet geminiTasklet() {
-        return (contribution, chunkContext) -> {
-            log.info("Gemini API 테스트 시작");
-            
-            String testPrompt = "안녕하세요. 간단한 테스트 메시지입니다.";
-            String response = gemma3Service.generateContent(testPrompt);
-            
-            log.info("Gemini API 응답: {}", response);
-            log.info("Gemini API 테스트 완료");
-            
-            return RepeatStatus.FINISHED;
-        };
-    }
-
-    @Bean
-    public Job testMongo(){
+    @Order(2)
+    public Job testMongoJob() {
         return new JobBuilder("testMongoJob", jobRepository)
                 .start(mongoTestStep())
                 .build();
@@ -83,9 +50,8 @@ public class BatchConfig {
     public Tasklet mongoTasklet() {
         return (contribution, chunkContext) -> {
             log.info("MongoDB 연결 테스트 시작");
-            // https://docs.spring.io/spring-data/mongodb/reference/mongodb/template-query-operations.html
+            
             Query query = new Query();
-            // 없는 필드 null 로 담김
             RawRecipe one = mongoTemplate.findOne(query, RawRecipe.class, testCollectionName);
 
             if (one != null) {
