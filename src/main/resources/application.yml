@@ -18,7 +18,7 @@ logging:
 spring:
   batch:
     job:
-      enabled: true # 자동 실행 X
+      enabled: false # 자동 실행 X
 #      name: testGeminiJob
 #      name: testMongoJob
 #      # 명령어나 launcher 같은 거 이용할듯
