@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.entity.rawData;
+package HeoJin.SpringBatch.entity.processedData;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class RawCookingOrder {
-    private int step;
-    private String instruction;
+public class ProcessedIngredient {
+    private String ingredient;
 }

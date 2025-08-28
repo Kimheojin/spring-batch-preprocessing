@@ -1,5 +1,8 @@
-package HeoJin.SpringBatch.entity.rawData;
+package HeoJin.SpringBatch.entity.processedData;
 
+
+import HeoJin.SpringBatch.entity.rawData.RawCookingOrder;
+import HeoJin.SpringBatch.entity.rawData.RawIngredient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,24 +10,19 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Document
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class RawRecipe {
-    @Id // mongo 아이디가 string
+public class ProcessedRecipe {
+    @Id
     private String id;
 
     private String recipeName;
-
-    private String cookingTime;
-
     private String sourceUrl;
     private String siteIndex;
 
@@ -33,7 +31,5 @@ public class RawRecipe {
     @Builder.Default
     private List<RawCookingOrder> cookingOrderList = new ArrayList<>();
 
-    private LocalDateTime crawledAt;
 
 }
-
