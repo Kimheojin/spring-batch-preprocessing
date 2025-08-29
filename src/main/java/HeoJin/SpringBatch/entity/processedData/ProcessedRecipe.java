@@ -1,8 +1,6 @@
 package HeoJin.SpringBatch.entity.processedData;
 
 
-import HeoJin.SpringBatch.entity.rawData.RawCookingOrder;
-import HeoJin.SpringBatch.entity.rawData.RawIngredient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +25,9 @@ public class ProcessedRecipe {
     private String siteIndex;
 
     @Builder.Default
-    private List<RawIngredient> ingredientList = new ArrayList<>();
+    private List<String> ingredientList = new ArrayList<>();
     @Builder.Default
-    private List<RawCookingOrder> cookingOrderList = new ArrayList<>();
+    private List<ProcessedCookingOrder> cookingOrderList = new ArrayList<>();
 
 
 }

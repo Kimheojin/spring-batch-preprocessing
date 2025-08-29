@@ -11,5 +11,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ProcessedCookingOrder {
     private int step;
-    private string instruction;
+    private String instruction;
 }
