@@ -1,0 +1,21 @@
+prompt:
+  test: |
+    다음 2개 혹은 1개의 레시피 데이터에서 각각의 ingredientList를 cookingOrderList의 조리과정을 분석해서 완성해주세요.
+    
+    조건:
+      - 기존 ingredientList를 기반으로 하되, cookingOrderList 에서 언급 + 기존 ingredientList 범주에 포함되지 않는 재료를 추가
+      - 재료명만 추출 (수량, 단위 제외)
+      - 예: "쌀 2컵" → "쌀", "무청 200g" → "무청", "쌀뜨물" → "쌀뜨물"
+      - 조리 도구나 방법은 제외 (냄비, 강판, 체 등)
+      - 중복 재료는 제거
+    
+    다음 형식의 JSON 배열로 응답해주세요:
+    [
+      {
+        "recipeName": "레시피명",
+        "sourceUrl": "URL",
+        "siteIndex": "사이트인덱스",
+        "ingredientList": [완성된 재료 배열],
+        "cookingOrderList": [원본 cookingOrderList 그대로]
+      }
+    ]
