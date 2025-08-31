@@ -1,6 +1,8 @@
 package HeoJin.SpringBatch.config.gemini;
 
 
+import HeoJin.SpringBatch.entity.processedData.ProcessedRecipe;
+import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,12 @@ public class Gemma3Service {
 
     @Value("${gemini.api.url}")
     private String apiUrl;
+
+    @Value("${prompt.test}")
+    private String testPrompt;
     private final RestClient restClient;
 
     public Gemma3Service( RestClient restClient) {
-        this.apiUrl = apiUrl;
         this.restClient = restClient;
     }
 
@@ -50,6 +54,11 @@ public class Gemma3Service {
             log.error("Error calling Gemma3 API: {}", e.getMessage());
             throw new RuntimeException("Failed to generate content", e);
         }
+    }
+    public  List<ProcessedRecipe> processBatch(List<RawRecipe> itmes) {
+
+        generateContent(testPrompt);
+        return List.of();
     }
 
 }

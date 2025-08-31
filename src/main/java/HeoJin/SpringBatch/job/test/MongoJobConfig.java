@@ -28,7 +28,7 @@ public class MongoJobConfig {
     private final PlatformTransactionManager transactionManager;
     private final MongoTemplate mongoTemplate;
 
-    @Value("${recipe.sites.okitchen.collection-name}")
+    @Value("${recipe.test.testDB}")
     private String testCollectionName;
 
     @Bean

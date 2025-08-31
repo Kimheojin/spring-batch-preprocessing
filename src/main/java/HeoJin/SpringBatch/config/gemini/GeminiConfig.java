@@ -12,16 +12,14 @@ import org.springframework.web.client.RestClient;
 public class GeminiConfig {
 
 //    https://docs.aimlapi.com/api-references/text-models-llm/google/gemma-3
-    // 여기가 그나마 정확한듯
+
 
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    @Value("${gemini.api.url}")
-    private String apiUrl;
-
     @Value("${gemini.api.timeout:30000}")
     private int timeout;
+
 
 
     @Bean
