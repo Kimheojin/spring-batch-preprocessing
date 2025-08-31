@@ -23,7 +23,7 @@
 
 ### Gemini
 
-다음 2개의 레시피 데이터에서 각각의 ingredientList를 cookingOrderList의 조리과정을 분석해서 완성해주세요.
+다음 2개 혹은 1개의 레시피 데이터에서 각각의 ingredientList를 cookingOrderList의 조리과정을 분석해서 완성해주세요.
 
 조건:
 - 기존 ingredientList는 참고만 하고, cookingOrderList에서 언급된 모든 재료를 추출

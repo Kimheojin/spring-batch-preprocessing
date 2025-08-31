@@ -1,12 +1,12 @@
 spring:
   profiles:
-    active: mongo, gemini, mysql
+    active: mongo, gemini, mysql, prompt
 
 ---
 spring:
   config:
     activate:
-      on-profile: mongo, gemini, mysql
+      on-profile: mongo, gemini, mysql, prompt
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
@@ -18,8 +18,8 @@ logging:
 spring:
   batch:
     job:
-      enabled: false # 자동 실행 X
-#      name: testGeminiJob
+#      enabled: false # 자동 실행 X
+      name: processDataJob
 #      name: testMongoJob
 #      # 명령어나 launcher 같은 거 이용할듯
     jdbc:

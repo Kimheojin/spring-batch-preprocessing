@@ -3,11 +3,17 @@ package HeoJin.SpringBatch.config.gemini;
 
 import HeoJin.SpringBatch.entity.processedData.ProcessedRecipe;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
+import javax.management.Query;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +24,16 @@ public class Gemma3Service {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
+
+
     @Value("${prompt.test}")
     private String testPrompt;
+
+    private MongoTemplate mongoTemplate;
+
+
+    @Value("${recipe.deploy.processedDB}")
+    private String processedCollection;
     private final RestClient restClient;
 
     public Gemma3Service( RestClient restClient) {
@@ -55,10 +69,35 @@ public class Gemma3Service {
             throw new RuntimeException("Failed to generate content", e);
         }
     }
-    public  List<ProcessedRecipe> processBatch(List<RawRecipe> itmes) {
+    public  List<ProcessedRecipe> processBatch(List<RawRecipe> items) throws JsonProcessingException {
+        log.info("processor 시작");
 
-        generateContent(testPrompt);
-        return List.of();
+        Query query = new Query();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String recipesJson = objectMapper.writeValueAsString(items);
+        String prompt = testPrompt + recipesJson;
+
+        String response = generateContent(prompt);
+        JsonNode responseNode = objectMapper.readTree(response);
+        String actualData = responseNode.get("candidates").get(0)
+                .get("content").get("parts").get(0)
+                .get("text").asText();
+
+        // "```json\n"과 "\n```" 제거
+        String cleanedData = actualData.replaceAll("```json\\n", "").replaceAll("\\n```", "");
+
+        log.info("정제된 데이터: {}", cleanedData);
+        List<ProcessedRecipe> processedRecipes = objectMapper.readValue(
+                cleanedData,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, ProcessedRecipe.class)
+        );
+
+
+
+
+        return processedRecipes;
     }
+
 
 }
