@@ -42,7 +42,7 @@ public class GeminiJobConfig {
     @Value("${recipe.test.testProcessedDB}")
     private String processedRawDB;
     @Bean
-    @Order(1)
+//    @Order(1)
     public Job testGeminiJob() {
         return new JobBuilder("testGeminiJob", jobRepository)
                 .start(geminiTestStep())
