@@ -6,14 +6,11 @@ import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
-import javax.management.Query;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +22,8 @@ public class Gemma3Service {
     private String apiUrl;
 
 
-
     @Value("${prompt.test}")
     private String testPrompt;
-
-    private MongoTemplate mongoTemplate;
 
 
     @Value("${recipe.deploy.processedDB}")
@@ -72,7 +66,7 @@ public class Gemma3Service {
     public  List<ProcessedRecipe> processBatch(List<RawRecipe> items) throws JsonProcessingException {
         log.info("processor 시작");
 
-        Query query = new Query();
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         String recipesJson = objectMapper.writeValueAsString(items);
