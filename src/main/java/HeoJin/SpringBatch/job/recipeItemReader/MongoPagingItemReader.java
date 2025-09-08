@@ -25,17 +25,17 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MongoCursorItemReader implements ItemStreamReader<List<RawRecipe>> {
+public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> {
 
-
+    // open(시작할 떄 한번) -> read -> update -> close
     private static final String LAST_PROCESSED_ID = "last.processed.id";
     private static final int PAIR_SIZE = 2; // 2개씩 묶어서 처리
-    private static final int TEST_LIMIT = 6; // 테스트용: 총 6개 아이템만 처리 (3번의 read)
+
 
     private final MongoTemplate mongoTemplate;
     private MongoCursor<RawRecipe> mongoCursor;
     private String lastProcessedId;
-    private int processedCount = 0; // 테스트용 카운터
+
 
     @Value("${recipe.deploy.rawDB}")
     private String rawDataCollectionName;
@@ -66,36 +66,37 @@ public class MongoCursorItemReader implements ItemStreamReader<List<RawRecipe>> 
                         .read(RawRecipe.class, doc))
                 .cursor();
 
-        ;
+
 
     }
     @Override
     public List<RawRecipe> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (mongoCursor == null || !mongoCursor.hasNext() || processedCount >= TEST_LIMIT) {
+        if (mongoCursor == null || !mongoCursor.hasNext()) {
             return null;
         }
 
         List<RawRecipe> batch = new ArrayList<>();
         
         // 2개씩 묶어서 반환
-        for (int i = 0; i < PAIR_SIZE && mongoCursor.hasNext() && processedCount < TEST_LIMIT; i++) {
+        for (int i = 0; i < PAIR_SIZE && mongoCursor.hasNext(); i++) {
             RawRecipe item = mongoCursor.next();
             batch.add(item);
             lastProcessedId = item.getId(); // 마지막 아이템의 ID 저장
-            processedCount++; // 카운터 증가
+
         }
         
-        log.info("테스트 제한: {}/{} 개 처리됨", processedCount, TEST_LIMIT);
+
         return batch.isEmpty() ? null : batch;
     }
 
 
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
+        // 커밋 성공 시에만 (청크 단위로)
 
         // meta schema에 저장
         if (lastProcessedId != null) {
-            // Jsond 형태로 인코딩한 다음 저장
+            // Json 형태로 인코딩한 다음 저장
             executionContext.putString(LAST_PROCESSED_ID, lastProcessedId);
         }
     }
