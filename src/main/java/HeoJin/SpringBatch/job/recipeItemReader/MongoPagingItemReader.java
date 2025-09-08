@@ -30,11 +30,14 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
     // open(시작할 떄 한번) -> read -> update -> close
     private static final String LAST_PROCESSED_ID = "last.processed.id";
     private static final int PAIR_SIZE = 2; // 2개씩 묶어서 처리
+    private static final int PAGE_SIZE = 100;
 
 
     private final MongoTemplate mongoTemplate;
-    private MongoCursor<RawRecipe> mongoCursor;
+    // 싱글스레드라 아직으 신경 X, 스레드 구조 바뀌면 바꾸기
+    private List<RawRecipe> currentBatch;
     private String lastProcessedId;
+    private int currentIndex;
 
 
     @Value("${recipe.deploy.rawDB}")
@@ -44,42 +47,35 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         // job 시작할 때 한번
-
         lastProcessedId = executionContext.getString(LAST_PROCESSED_ID, null);
 
-        Query query = new Query();
-
-        if (lastProcessedId != null) {
-            query.addCriteria(Criteria.where("_id")
-                    .gt(new ObjectId(lastProcessedId))); // 조건 추가
-            log.info("현재 마지막 processedId : {}", lastProcessedId);
+        currentBatch = new ArrayList<>();
+        currentIndex = 0;
+        if(lastProcessedId != null){
+            log.info("재시작: 마지마가 처리된 ID: {}", lastProcessedId);
         }
-
-        // 기본으로 생성되는 오름차순 인덱스 사용
-        query.with(Sort.by(Sort.Direction.ASC, "_id")); // 명시적 정렬 조건 추가
-
-        mongoCursor = mongoTemplate.getCollection(rawDataCollectionName)
-                .find(query.getQueryObject())
-                .sort(query.getSortObject())
-                .batchSize(100) // 배치 사이즈 설정 (기본값: 101)
-                .map(doc ->  mongoTemplate.getConverter()
-                        .read(RawRecipe.class, doc))
-                .cursor();
-
 
 
     }
     @Override
     public List<RawRecipe> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (mongoCursor == null || !mongoCursor.hasNext()) {
+        // 현재 배치가 비어있거나 or 모두 처리했으면 새로 로드
+        if (currentBatch.isEmpty() || currentIndex >= currentBatch.size()) {
+            loadNextBatch();
+            currentIndex = 0;
+        }
+
+        if(currentBatch.isEmpty()){
+            // 다 읽은 경우
             return null;
         }
 
         List<RawRecipe> batch = new ArrayList<>();
         
-        // 2개씩 묶어서 반환
-        for (int i = 0; i < PAIR_SIZE && mongoCursor.hasNext(); i++) {
-            RawRecipe item = mongoCursor.next();
+        // pair 사이즈 만큼 묶어서 반환
+        // current Index 0 부터 시작이라 < 로 처리
+        for (int i = 0; i < PAIR_SIZE && currentIndex < currentBatch.size(); i++) {
+            RawRecipe item = currentBatch.get(currentIndex++);
             batch.add(item);
             lastProcessedId = item.getId(); // 마지막 아이템의 ID 저장
 
@@ -104,10 +100,24 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
     @Override
     public void close() throws ItemStreamException {
         // job 마지막에 한번
-        if (mongoCursor != null) {
-            mongoCursor.close();
-            log.info("MongoDB cursor closed");
+        currentBatch.clear();
+        log.info("Mongo DB 페이징 리더 종료");
+    }
+
+    private void loadNextBatch() {
+        Query query = new Query();
+
+        if(lastProcessedId != null){
+            query.addCriteria(Criteria.where("_id").gt(new ObjectId(lastProcessedId)));
         }
+
+        query.with(Sort.by(Sort.Direction.ASC, "_id"));
+        query.limit(PAGE_SIZE);
+
+        // hint 메소드 사용
+        query.withHint("_id_"); // 인덱스 이름으로 지정
+
+        currentBatch = mongoTemplate.find(query, RawRecipe.class, rawDataCollectionName);
     }
 }
 
