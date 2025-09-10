@@ -34,7 +34,8 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
 
 
     private final MongoTemplate mongoTemplate;
-    // 싱글스레드라 아직으 신경 X, 스레드 구조 바뀌면 바꾸기
+
+    // 싱글스레드라 신경 X, 싱글 스레드 강제
     private List<RawRecipe> currentBatch;
     private String lastProcessedId;
     private int currentIndex;
@@ -52,7 +53,7 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
         currentBatch = new ArrayList<>();
         currentIndex = 0;
         if(lastProcessedId != null){
-            log.info("재시작: 마지마가 처리된 ID: {}", lastProcessedId);
+            log.info("재시작: 마지막 처리된 ID: {}", lastProcessedId);
         }
 
 
@@ -80,7 +81,6 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
             lastProcessedId = item.getId(); // 마지막 아이템의 ID 저장
 
         }
-        
 
         return batch.isEmpty() ? null : batch;
     }
