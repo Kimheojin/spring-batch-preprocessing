@@ -31,8 +31,16 @@ public class MongoRecipeWriter implements ItemStreamWriter<List<ProcessedRecipe>
                 .collect(Collectors.toList());
         
         if (!flattenedRecipes.isEmpty()) {
+            // insertAll 은 collection 지정 불가
+
             mongoTemplate.insert(flattenedRecipes, processedCollectionName);
             log.info("Saved {} processed recipes to MongoDB", flattenedRecipes.size());
         }
+        // 다른 옵션 link들
+        // https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb/core/BulkOperations.html
+        // https://pasudo123.tistory.com/504
+        // 나중에 고려하기ㅣ(아직은 데이터 테스트 부족)
+
+
     }
 }

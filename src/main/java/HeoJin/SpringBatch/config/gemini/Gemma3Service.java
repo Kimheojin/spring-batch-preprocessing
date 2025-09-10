@@ -22,8 +22,6 @@ public class Gemma3Service {
     private String apiUrl;
 
 
-    @Value("${prompt.test}")
-    private String testPrompt;
 
 
     @Value("${recipe.deploy.processedDB}")
@@ -63,7 +61,7 @@ public class Gemma3Service {
             throw new RuntimeException("Failed to generate content", e);
         }
     }
-    public  List<ProcessedRecipe> processBatch(List<RawRecipe> items) throws JsonProcessingException {
+    public  List<ProcessedRecipe> processBatch(List<RawRecipe> items, String testPrompt) throws JsonProcessingException {
         log.info("processor 시작");
 
 
