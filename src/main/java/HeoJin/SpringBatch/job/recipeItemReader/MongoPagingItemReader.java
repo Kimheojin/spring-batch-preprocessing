@@ -28,6 +28,8 @@ import java.util.List;
 public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> {
 
     // open(시작할 떄 한번) -> read -> update -> close
+
+    // 커스텀 키
     private static final String LAST_PROCESSED_ID = "last.processed.id";
     private static final int PAIR_SIZE = 2; // 2개씩 묶어서 처리
     private static final int PAGE_SIZE = 100;
@@ -44,6 +46,7 @@ public class MongoPagingItemReader implements ItemStreamReader<List<RawRecipe>> 
     @Value("${recipe.deploy.rawDB}")
     private String rawDataCollectionName;
 
+    // ExecutionContext -> map 구조
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {

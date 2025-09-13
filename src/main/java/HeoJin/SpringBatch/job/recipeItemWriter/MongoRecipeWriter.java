@@ -1,6 +1,7 @@
 package HeoJin.SpringBatch.job.recipeItemWriter;
 
 import HeoJin.SpringBatch.entity.processedData.ProcessedRecipe;
+import HeoJin.SpringBatch.job.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
@@ -25,22 +26,52 @@ public class MongoRecipeWriter implements ItemStreamWriter<List<ProcessedRecipe>
     @Override
     public void write(Chunk<? extends List<ProcessedRecipe>> chunk) throws Exception {
         // List<List<ProcessedRecipe>> -> 이거 청크단위로 묶여서 내려옴
-        List<ProcessedRecipe> flattenedRecipes = chunk.getItems()
+        List<ProcessedRecipe> validRecipes = chunk.getItems()
                 .stream()
                 .flatMap(List::stream)
+                .filter(this::isValidRecipe) // this 는 현재 클래스
                 .collect(Collectors.toList());
-        
-        if (!flattenedRecipes.isEmpty()) {
-            // insertAll 은 collection 지정 불가
 
-            mongoTemplate.insert(flattenedRecipes, processedCollectionName);
-            log.info("Saved {} processed recipes to MongoDB", flattenedRecipes.size());
+        // 검증용
+        int totalRecipeCount = chunk.getItems()
+                .stream()
+                .mapToInt(List::size)
+                .sum();
+
+
+        if(validRecipes.size() != totalRecipeCount) {
+            throw new CustomException("writer 부분 불완전 데이터");
         }
+        
+
+
+        mongoTemplate.insert(validRecipes, processedCollectionName);
+        log.info("저장 완료 {} 개", validRecipes.size());
+
         // 다른 옵션 link들
         // https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb/core/BulkOperations.html
         // https://pasudo123.tistory.com/504
         // 나중에 고려하기ㅣ(아직은 데이터 테스트 부족)
+    }
 
+    private boolean isValidRecipe(ProcessedRecipe recipe) {
+        if (recipe == null) return false;
+        
+        // 필수 필드들이 비어있으면 필터링
+        if (isEmpty(recipe.getRecipeName()) || 
+            isEmpty(recipe.getSourceUrl()) || 
+            isEmpty(recipe.getSiteIndex()) ||
+            recipe.getIngredientList() == null || recipe.getIngredientList().isEmpty() ||
+            recipe.getCookingOrderList() == null || recipe.getCookingOrderList().isEmpty()) {
 
+            log.warn("필드 비어잇음: {}", recipe.getId());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 }

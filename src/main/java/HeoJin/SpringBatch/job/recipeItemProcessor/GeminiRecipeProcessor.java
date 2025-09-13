@@ -27,17 +27,25 @@ public class GeminiRecipeProcessor implements ItemProcessor<List<RawRecipe>, Lis
     public List<ProcessedRecipe> process(List<RawRecipe> items) throws Exception {
         // items는 2개씩 묶어서
 
-        if (items == null || items.isEmpty()) {
-            throw new CustomException("Reader에서 빈 item이 넘어옴");
+        if(items.size() != 2) {
+            throw new CustomException("예상과 다른 배치 사이즈");
         }
-        
-        log.info("레시피 사지으 1개 or 2개 : {} 개", items.size());
+
+        // cooking order list 없으면 복구 불가 형태
+        if ( items.get(0).getCookingOrderList().isEmpty()
+                || items.get(1).getCookingOrderList().isEmpty()  ) {
+            throw new CustomException("불완전한 데이터 넘어옴");
+        }
+
+        log.info("레시피  2개 : {} 개", items.size());
         
         // Gemini로 2개씩
         List<ProcessedRecipe> processedRecipes = gemma3Service.processBatch(items, testPrompt);
         
         log.info("Successfully processed {} recipes", processedRecipes.size());
-        
+
+
+
         // API rate limit 대응
         Thread.sleep(30000);
 

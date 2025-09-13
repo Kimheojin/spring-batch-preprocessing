@@ -67,6 +67,8 @@ public class Gemma3Service {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // for 로 하나씩 담는거 보다 이게 더 좋을듯
         String recipesJson = objectMapper.writeValueAsString(items);
         String prompt = testPrompt + recipesJson;
 
