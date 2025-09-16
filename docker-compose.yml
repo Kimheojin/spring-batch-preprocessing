@@ -1,19 +1,27 @@
-version: '3.8'
-
+#version: '3.8'
+# 버전 기입 안해도 상관 없는듯
 services:
   spring-batch-app:
     # docker file 사용
     build: .
     container_name: spring-batch
     ports:
-      - "8080:8080"
+      - "9030:9030"
     volumes:
       # 로그 파일을 호스트에 bind mount
       - ./logs:/app/logs
-      # 설정 파일 override 가능하도록 (선택사항)
-      - ./src/main/resources/application.yml:/app/application.yml:ro
+
     environment:
       # 환경변수 나중에 수정하기
       # 로그 파일 경로 설정
       - LOGGING_FILE_PATH=/app/logs
+      - # 타임존 설정
+      - TZ=Asia/Seoul
+    networks:
+      - spring-batch-network
+
+## 미리 생성된 네트워크
+  networks:
+    spring-batch-network:
+      external: true
 

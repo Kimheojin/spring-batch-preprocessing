@@ -1,6 +1,8 @@
 spring:
   profiles:
-    active: mongo, gemini, mysql, prompt
+    active: mongo, gemini, prompt
+    ## docker 가 우선순위가 높음
+    ## 덮어써서 그런듯
 
 ---
 
@@ -8,6 +10,7 @@ logging:
   # 로그 파일 설정
   file:
     # dockerfile 부분에 만들어 놓음
+    # docker container 가 먼저 시작될듯
     name: /app/logs/spring-batch.log
   pattern:
     # 파일에 저장될 로그 패턴
@@ -16,22 +19,9 @@ logging:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   
   level:
-    # Spring 관련 로그
-    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-    org.springframework.data.mongodb: DEBUG  # MongoDB 쿼리 로그 보기
-    org.springframework.batch: INFO
-    
-    # 패키지별 로거 설정
-    HeoJin.SpringBatch.job: DEBUG           # Job 관련 로그
-    HeoJin.SpringBatch.config: INFO         # 설정 관련 로그
-    HeoJin.SpringBatch.entity: WARN         # Entity 관련 로그
-    HeoJin.SpringBatch.job.recipeItemReader: DEBUG      # Reader 로그
-    HeoJin.SpringBatch.job.recipeItemProcessor: DEBUG   # Processor 로그
-    HeoJin.SpringBatch.job.recipeItemWriter: DEBUG      # Writer 로그
-    HeoJin.SpringBatch.job.recipeListener: INFO         # Listener 로그
-    
     # 기본 로그 레벨
-    root: INFO
+    ## warn 이랑 eroor 만 기록됨
+    root: WARN
 
 
 ---
