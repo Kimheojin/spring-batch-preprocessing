@@ -61,7 +61,6 @@ public class MongoJobConfig {
                 log.info("Cooking Time: {}", one.getCookingTime());
                 log.info("Source URL: {}", one.getSourceUrl());
                 log.info("Site Index: {}", one.getSiteIndex());
-                log.info("Crawled At: {}", one.getCrawledAt());
                 log.info("Ingredients Count: {}", one.getIngredientList().size());
                 log.info("Cooking Orders Count: {}", one.getCookingOrderList().size());
                 
