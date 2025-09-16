@@ -4,7 +4,7 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY . /app
 RUN chmod +x ./gradlew
-RUN ./gradlew build -x
+RUN ./gradlew build -x test
 
 # 실행 스테이지
 FROM eclipse-temurin:17-jre
