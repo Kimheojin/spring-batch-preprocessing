@@ -34,7 +34,7 @@ public class GeminiRecipeProcessor implements ItemProcessor<List<RawRecipe>, Lis
         // cooking order list 없으면 복구 불가 형태
         if ( items.get(0).getCookingOrderList().isEmpty()
                 || items.get(1).getCookingOrderList().isEmpty()  ) {
-            throw new CustomException("불완전한 데이터 넘어옴");
+            throw new CustomException("불완전한 데이터 reader 에서 넘어옴");
         }
 
         log.info("레시피  2개 : {} 개", items.size());
