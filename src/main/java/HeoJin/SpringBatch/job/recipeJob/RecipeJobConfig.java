@@ -55,10 +55,11 @@ public class RecipeJobConfig {
                 // 장애 허용 (오류가 발생해도 일단 진행 허용)
                 .faultTolerant()
                 .skip(CustomException.class)
+                .skipLimit(500)
                 .listener(readerSkipListener)
                 .listener(processorSkipListener)
                 .listener(writerSkipListener)
-                .skipLimit(500)
+
                 .build();
     }
 }
