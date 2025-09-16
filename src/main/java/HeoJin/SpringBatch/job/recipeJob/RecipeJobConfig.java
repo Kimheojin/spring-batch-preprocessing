@@ -38,7 +38,7 @@ public class RecipeJobConfig {
 
     @Bean
     public Job processDataJob() {
-        return new JobBuilder("processDataJob", jobRepository)
+        return new JobBuilder("processDataJob2", jobRepository)
                 .start(processDataStep())
                 .build();
     }

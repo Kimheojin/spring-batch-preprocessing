@@ -18,10 +18,10 @@ logging:
     # 콘솔에 출력될 로그 패턴
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   
-  level:
-    # 기본 로그 레벨
-    ## warn 이랑 eroor 만 기록됨
-    root: WARN
+#  level:
+#    # 기본 로그 레벨
+#    ## warn 이랑 eroor 만 기록됨
+#    root: WARN
 
 
 ---
@@ -29,7 +29,7 @@ spring:
   batch:
     job:
 #      enabled: false # 자동 실행 X
-      name: processDataJob
+      name: processDataJob2
 #      name: testMongoJob
 #      # 명령어나 launcher 같은 거 이용할듯
     jdbc:
