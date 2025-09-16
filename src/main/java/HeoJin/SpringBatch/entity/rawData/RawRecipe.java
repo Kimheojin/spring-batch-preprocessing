@@ -33,7 +33,6 @@ public class RawRecipe {
     @Builder.Default
     private List<RawCookingOrder> cookingOrderList = new ArrayList<>();
 
-    private LocalDateTime crawledAt;
 
 }
 
