@@ -52,109 +52,7 @@ JSON 배열 형식으로 응답해주세요:
 "siteIndex": "사이트인덱스2",
 "ingredientList": ["완성된 재료 리스트2"],
 "cookingOrderList": [원본 그대로 유지2]
-}
-]
-
-데이터1:
-{
-"_id": {
-"$oid": "68a1b91f00b786a3e58e5753"
-},
-"recipeName": "무청밥",
-"sourceUrl": "https://www.menupan.com/Cook/recipeview.asp?cookid=1790",
-"siteIndex": "1790",
-"ingredientList": [
-{
-"ingredient": "물"
-},
-{
-"ingredient": "간장"
-},
-{
-"ingredient": "참기름"
-}
-],
-"cookingOrderList": [
-{
-"step": 1,
-"instruction": "불린 쌀은 체에 밭쳐 물기를 뺀다."
-},
-{
-"step": 2,
-"instruction": "삶은 무청은 2cm 길이로 잘라 간장, 참기름으로 밑간한다."
-},
-{
-"step": 3,
-"instruction": "냄비에 모든 재료를 담은 후 물 1과1/2컵을 넣어 밥을 짓는다."
-},
-{
-"step": 4,
-"instruction": ""
-},
-{
-"step": 5,
-"instruction": ""
-}
-]
-}
-
-데이터2:
-{
-"_id": {
-"$oid": "68a1b91f00b786a3e58e5752"
-},
-"recipeName": "무죽",
-"sourceUrl": "https://www.menupan.com/Cook/recipeview.asp?cookid=1789",
-"siteIndex": "1789",
-"ingredientList": [
-{
-"ingredient": "무"
-},
-{
-"ingredient": "쌀"
-},
-{
-"ingredient": "소금"
-},
-{
-"ingredient": "참기름"
-},
-{
-"ingredient": "깨소금"
-}
-],
-"cookingOrderList": [
-{
-"step": 1,
-"instruction": "쌀은 깨끗이 씻어서 마지막 씻은 물은 남겨두고 쌀만 건져 물기를 뺀다."
-},
-{
-"step": 2,
-"instruction": "무는 1/3은 0.5cm로 깍둑썰고 나머지는 강판에 곱게 간다."
-},
-{
-"step": 3,
-"instruction": "냄비에 참기름을 넣고 쌀, 깍둑썬 무를 넣고 타지 않게 볶아준다."
-},
-{
-"step": 4,
-"instruction": "③이 볶아지면 ②의 간 무와 ①의 쌀뜨물을 넉넉하게 붓고 약불에서 오래 끓인다."
-},
-{
-"step": 5,
-"instruction": "④가 끓어서 쌀이 퍼지면 소금으로 간을 하고 통깨를 뿌려낸다."
-},
-{
-"step": 6,
-"instruction": ""
-},
-{
-"step": 7,
-"instruction": ""
-}
-]
-}
-
+...
 ## 배포저 할 꺼
 - 포트포워딩 연결 후 메타 스키마 생성되는 지 확인하기
 - mysql docker container 로 확인하깅
@@ -164,3 +62,26 @@ JSON 배열 형식으로 응답해주세요:
 - 에러 관련 생각해서 처리 준비 해야 할 수도
 - 에러 발생 시 어떻게 처리할 지 생각하기
   - 로그만으로 처리하기엔 좀 그래보임
+## 재처리 관련
+- 로그로 관리할 지
+- 커스텀 테이블 만들어서 할 지
+- ExcutionContext 에 넣어서 할지
+
+## 런타임 단계 초기화 설정 관련 정리
+
+
+- application.yml
+  - job launcher 관련 설정
+  - 로그 파일 위치 지정
+    -  이거 docker container 띄워진 후 동작하는 거라 상관 없다고 함
+  - 프로파일 active 관련 설정
+    - 현재 mongo, gemini, prompt 지정
+  - 졸리다
+
+### docker 파일 관련
+
+- 포트 명시적으로만 열변 될듯
+
+
+
+      
