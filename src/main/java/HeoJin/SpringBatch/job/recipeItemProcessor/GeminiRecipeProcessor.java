@@ -11,6 +11,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -38,18 +39,21 @@ public class GeminiRecipeProcessor implements ItemProcessor<List<RawRecipe>, Lis
         }
 
         log.info("레시피  2개 : {} 개", items.size());
-        
+
+        List<ProcessedRecipe> processedRecipes = new ArrayList<>();
         // Gemini로 2개씩
-        List<ProcessedRecipe> processedRecipes = gemma3Service.processBatch(items, testPrompt);
-        
-        log.info("Successfully processed {} recipes", processedRecipes.size());
+        try {
+             processedRecipes = gemma3Service.processBatch(items, testPrompt);
+            log.info("Successfully processed {} recipes", processedRecipes.size());
+
+            Thread.sleep(30000);
+
+            return processedRecipes;
+        } catch (Exception e) { // 뭐가 나올지 몰겠는디
+            throw new CustomException("Gemini API timeout: " + e.getMessage());
+        }
 
 
 
-        // API rate limit 대응
-        Thread.sleep(30000);
-
-        
-        return processedRecipes;
     }
 }

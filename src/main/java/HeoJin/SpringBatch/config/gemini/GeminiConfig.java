@@ -17,7 +17,7 @@ public class GeminiConfig {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    @Value("${gemini.api.timeout:30000}")
+    @Value("${gemini.api.timeout}")
     private int timeout;
 
 
