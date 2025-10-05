@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.job.recipeItemReader;
+package HeoJin.SpringBatch.job.recipeJob.recipeItemReader;
 
 
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;

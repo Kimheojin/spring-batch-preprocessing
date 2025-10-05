@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.job.recipeItemWriter;
+package HeoJin.SpringBatch.job.recipeJob.recipeItemWriter;
 
 import HeoJin.SpringBatch.entity.processedData.ProcessedRecipe;
 import HeoJin.SpringBatch.job.exception.CustomException;

@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.job.recipeItemProcessor;
+package HeoJin.SpringBatch.job.recipeJob.recipeItemProcessor;
 
 
 import HeoJin.SpringBatch.config.gemini.Gemma3Service;
