@@ -8,6 +8,7 @@ import lombok.*;
 @Builder
 @Getter
 @AllArgsConstructor
+@Table(catalog = "test-database")
 public class Category {
 
     @Id

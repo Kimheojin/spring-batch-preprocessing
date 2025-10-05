@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(catalog = "test-database")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
