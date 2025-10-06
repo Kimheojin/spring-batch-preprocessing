@@ -56,8 +56,8 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
             Category randomCategory = categories.get(random.nextInt(categories.size()));
 
             Post post = Post.builder()
-                    .content(content.getInstruction())
-                    .title(item.getRecipeName() + " - " + content.getStep())
+                    .content(content.getInstruction() + "추가본")
+                    .title(item.getRecipeName() + " - " + content.getStep() + "추가본")
                     .member(defaultMember)
                     .category(randomCategory)
                     .regDate(LocalDateTime.now())

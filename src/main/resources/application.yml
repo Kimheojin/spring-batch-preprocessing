@@ -29,7 +29,7 @@ spring:
   batch:
     job:
 #      enabled: false # 자동 실행 X
-      name: processDataJob3
+      name: dummyDataJob2
 #      name: testMongoJob
 #      # 명령어나 launcher 같은 거 이용할듯
     jdbc:
