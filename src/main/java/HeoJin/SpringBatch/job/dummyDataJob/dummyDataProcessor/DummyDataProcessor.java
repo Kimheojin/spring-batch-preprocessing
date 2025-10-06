@@ -53,17 +53,19 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
 
         // 빈거 체크 안해도 괜찮지 않을까
         for(RawCookingOrder content : cookingOrderList){
-            Category randomCategory = categories.get(random.nextInt(categories.size()));
+            for(int i = 0; i < 100; i++) {
+                Category randomCategory = categories.get(random.nextInt(categories.size()));
 
-            Post post = Post.builder()
-                    .content(content.getInstruction() + "추가본")
-                    .title(item.getRecipeName() + " - " + content.getStep() + "추가본")
-                    .member(defaultMember)
-                    .category(randomCategory)
-                    .regDate(LocalDateTime.now())
-                    .build();
+                Post post = Post.builder()
+                        .content(content.getInstruction() + "추가본" + i)
+                        .title(item.getRecipeName() + " - " + content.getStep() + "추가본" + i)
+                        .member(defaultMember)
+                        .category(randomCategory)
+                        .regDate(LocalDateTime.now())
+                        .build();
 
-            postList.add(post);
+                postList.add(post);
+            }
         }
 
         return postList;
