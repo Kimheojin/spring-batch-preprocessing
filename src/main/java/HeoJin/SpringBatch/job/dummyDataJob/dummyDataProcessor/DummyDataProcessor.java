@@ -29,6 +29,13 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
 
+    private static final List<PostStatus> POST_STATUSES = List.of(
+            PostStatus.DRAFT,
+            PostStatus.PUBLISHED,
+            PostStatus.PRIVATE,
+            PostStatus.SCHEDULED
+    );
+
     private List<Category> categories;  // 메모리에 캐싱
     private Member defaultMember;       // 메모리에 캐싱
     private Random random = new Random();
@@ -51,18 +58,11 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
 
         List<Post> postList = new ArrayList<>();
 
-        List<PostStatus> postStatuses = new ArrayList<>();
-        postStatuses.add(PostStatus.PRIVATE);
-        postStatuses.add(PostStatus.PUBLISHED);
-        postStatuses.add(PostStatus.SCHEDULED);
-        postStatuses.add(PostStatus.DRAFT);
-
-
         // 빈거 체크 안해도 괜찮지 않을까
         for(RawCookingOrder content : cookingOrderList){
             for(int i = 0; i < 100; i++) {
                 Category randomCategory = categories.get(random.nextInt(categories.size()));
-                PostStatus postStatus = postStatuses.get(random.nextInt(postStatuses.size()));
+                PostStatus postStatus = POST_STATUSES.get(random.nextInt(POST_STATUSES.size()));
 
                 Post post = Post.builder()
                         .content(content.getInstruction() + "추가본" + i)

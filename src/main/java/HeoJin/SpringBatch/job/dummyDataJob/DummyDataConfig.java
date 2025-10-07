@@ -30,7 +30,7 @@ public class DummyDataConfig {
 
     @Bean
     public Job dummyDataJob(){
-        return new JobBuilder("dummyDataJob3", jobRepository)
+        return new JobBuilder("dummyDataJob4", jobRepository)
                 .start(initStep())
                 .next(dummyDataStep())
                 .build();
