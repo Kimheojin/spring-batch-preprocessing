@@ -3,6 +3,7 @@ package HeoJin.SpringBatch.job.dummyDataJob.dummyDataProcessor;
 import HeoJin.SpringBatch.entity.dummyData.Category;
 import HeoJin.SpringBatch.entity.dummyData.Member;
 import HeoJin.SpringBatch.entity.dummyData.Post;
+import HeoJin.SpringBatch.entity.dummyData.PostStatus;
 import HeoJin.SpringBatch.entity.rawData.RawCookingOrder;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import HeoJin.SpringBatch.repository.CategoryRepository;
@@ -50,11 +51,18 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
 
         List<Post> postList = new ArrayList<>();
 
+        List<PostStatus> postStatuses = new ArrayList<>();
+        postStatuses.add(PostStatus.PRIVATE);
+        postStatuses.add(PostStatus.PUBLISHED);
+        postStatuses.add(PostStatus.SCHEDULED);
+        postStatuses.add(PostStatus.DRAFT);
+
 
         // 빈거 체크 안해도 괜찮지 않을까
         for(RawCookingOrder content : cookingOrderList){
             for(int i = 0; i < 100; i++) {
                 Category randomCategory = categories.get(random.nextInt(categories.size()));
+                PostStatus postStatus = postStatuses.get(random.nextInt(postStatuses.size()));
 
                 Post post = Post.builder()
                         .content(content.getInstruction() + "추가본" + i)
@@ -62,6 +70,7 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
                         .member(defaultMember)
                         .category(randomCategory)
                         .regDate(LocalDateTime.now())
+                        .status(postStatus)
                         .build();
 
                 postList.add(post);
