@@ -24,11 +24,4 @@ public class Category {
     @Builder.Default
     private Long priority = 0L;
 
-    public void updatePriority(Long priority) {
-        this.priority = priority;
-    }
-
-    public void updateCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
 }

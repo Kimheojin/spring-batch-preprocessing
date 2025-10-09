@@ -12,15 +12,11 @@ import org.springframework.web.client.RestClient;
 public class GeminiConfig {
 
 //    https://docs.aimlapi.com/api-references/text-models-llm/google/gemma-3
-
-
     @Value("${gemini.api.key}")
     private String apiKey;
 
     @Value("${gemini.api.timeout}")
     private int timeout;
-
-
 
     @Bean
     public RestClient gemma3RestClient() {
@@ -30,7 +26,6 @@ public class GeminiConfig {
                 .defaultHeader("x-goog-api-key", apiKey)
                 .build();
     }
-
 
     @Bean
     public ClientHttpRequestFactory clientHttpRequestFactory() {

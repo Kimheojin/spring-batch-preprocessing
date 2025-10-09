@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RequiredArgsConstructor
 @Slf4j
 public class GeminiJobConfig {
-    // testGeminiJob
+
 
     private final Gemma3Service gemma3Service;
     private final JobRepository jobRepository;
@@ -42,7 +42,6 @@ public class GeminiJobConfig {
     @Value("${recipe.test.testProcessedDB}")
     private String processedRawDB;
     @Bean
-//    @Order(1)
     public Job testGeminiJob() {
         return new JobBuilder("testGeminiJob", jobRepository)
                 .start(geminiTestStep())
@@ -64,7 +63,7 @@ public class GeminiJobConfig {
             Query query = new Query().limit(2);
 
             List<RawRecipe> rawRecipes = mongoTemplate.find(query, RawRecipe.class, testRawDB);
-//            String testPrompt = "안녕하세요. 간단한 테스트 메시지입니다.";
+
 
             ObjectMapper objectMapper = new ObjectMapper();
             String recipesJson = objectMapper.writeValueAsString(rawRecipes);

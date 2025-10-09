@@ -22,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 @Slf4j
 public class MongoJobConfig {
-    // tesetMongoJob
+
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -32,7 +32,6 @@ public class MongoJobConfig {
     private String testCollectionName;
 
     @Bean
-    @Order(2)
     public Job testMongoJob() {
         return new JobBuilder("testMongoJob", jobRepository)
                 .start(mongoTestStep())

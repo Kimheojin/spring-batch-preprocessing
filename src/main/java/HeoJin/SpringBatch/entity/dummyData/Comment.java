@@ -47,21 +47,5 @@ public class Comment {
     private LocalDateTime regDate;
 
 
-    // 메소드
-    public void delete(){
-        this.status = CommentStatus.DELETED;
-    }
-
-    public void adminDelete() {
-        this.status = CommentStatus.ADMIN_DELETED;
-    }
-
-    public boolean isDeleted() {
-        return status == CommentStatus.DELETED || status == CommentStatus.ADMIN_DELETED;
-    }
-    public void updateComment(String content){
-        this.content = content;
-    }
-
 
 }

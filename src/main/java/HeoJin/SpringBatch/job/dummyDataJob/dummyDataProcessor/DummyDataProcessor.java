@@ -58,7 +58,6 @@ public class DummyDataProcessor implements ItemProcessor<RawRecipe, List<Post>>,
 
         List<Post> postList = new ArrayList<>();
 
-        // 빈거 체크 안해도 괜찮지 않을까
         for(RawCookingOrder content : cookingOrderList){
             for(int i = 0; i < 100; i++) {
                 Category randomCategory = categories.get(random.nextInt(categories.size()));

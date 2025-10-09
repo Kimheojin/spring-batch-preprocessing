@@ -41,12 +41,6 @@ public class Post {
     @Builder.Default
     private PostStatus status = PostStatus.PRIVATE; // 비공개 디폴트
 
-    public void updatePost(String title, String content, PostStatus postStatus){
-        this.title = title;
-        this.content = content;
-        this.status = postStatus;
-    }
-
     public void changeStatus(PostStatus status) {
         this.status = status;
     }

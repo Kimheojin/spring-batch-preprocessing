@@ -25,7 +25,7 @@ public class MongoRecipeWriter implements ItemStreamWriter<List<ProcessedRecipe>
     
     @Override
     public void write(Chunk<? extends List<ProcessedRecipe>> chunk) throws Exception {
-        // List<List<ProcessedRecipe>> -> 이거 청크단위로 묶여서 내려옴
+
         List<ProcessedRecipe> validRecipes = chunk.getItems()
                 .stream()
                 .flatMap(List::stream)

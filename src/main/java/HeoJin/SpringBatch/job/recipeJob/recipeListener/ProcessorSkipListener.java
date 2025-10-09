@@ -21,7 +21,6 @@ public class ProcessorSkipListener implements SkipListener<List<RawRecipe>, List
     // 프로세서 전용
 
     @Override
-//    @Transactional 이거 애매하다
     public void onSkipInProcess(List<RawRecipe> items, Throwable t) {
         log.warn("onSkipInProcess 진입 : {}", t.getMessage());
         if (items == null || items.isEmpty()) {

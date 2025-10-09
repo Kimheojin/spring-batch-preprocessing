@@ -20,7 +20,7 @@ public class DummyDataWriter implements ItemStreamWriter<List<Post>> {
 
     @Override
     public void write(Chunk<? extends List<Post>> chunk) throws Exception {
-        // chunk 는 항상 단편화
+        // chunk  단편화
         List<Post> allPosts = chunk.getItems().stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());

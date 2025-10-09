@@ -29,9 +29,5 @@ public class Member {
     private Role role;
 
 
-    // 단일 역할
-    public List<String> getRoles() {
-        return List.of(this.role.getRoleName());
-    }
 
 }

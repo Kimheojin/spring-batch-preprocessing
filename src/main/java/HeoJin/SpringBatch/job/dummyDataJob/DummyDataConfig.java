@@ -45,7 +45,6 @@ public class DummyDataConfig {
 
     @Bean
     public Step dummyDataStep() {
-
         //Processor가 ItemStream 인터페이스를 구현하면, Step에 명시적으로 등록해야됨
         return new StepBuilder("dummyDataStep", jobRepository)
                 .<RawRecipe, List<Post>>chunk(100, transactionManager)

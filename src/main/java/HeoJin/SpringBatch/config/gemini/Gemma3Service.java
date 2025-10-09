@@ -21,9 +21,6 @@ public class Gemma3Service {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
-
-
-
     @Value("${recipe.deploy.processedDB}")
     private String processedCollection;
     private final RestClient restClient;
@@ -34,7 +31,6 @@ public class Gemma3Service {
 
     //https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api?hl=ko#rest
     // REST 형식 관련
-
     public String generateContent(String prompt) {
         try {
             // Gemma3 API 요청 형식
@@ -55,8 +51,6 @@ public class Gemma3Service {
             return response;
 
         } catch (Exception e) {
-            // Batch 에러 처리 방식보고 다시 짜야할듯
-            // 메타 테이블 관련 해서 더 보기
             log.error("Error calling Gemma3 API: {}", e.getMessage());
             throw new RuntimeException("Failed to generate content", e);
         }
@@ -64,11 +58,8 @@ public class Gemma3Service {
     public  List<ProcessedRecipe> processBatch(List<RawRecipe> items, String testPrompt) throws JsonProcessingException {
         log.info("processor 시작");
 
-
-
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // for 로 하나씩 담는거 보다 이게 더 좋을듯
         String recipesJson = objectMapper.writeValueAsString(items);
         String prompt = testPrompt + recipesJson;
 
@@ -86,9 +77,6 @@ public class Gemma3Service {
                 cleanedData,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, ProcessedRecipe.class)
         );
-
-
-
 
         return processedRecipes;
     }
