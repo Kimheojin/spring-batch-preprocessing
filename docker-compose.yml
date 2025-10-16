@@ -25,9 +25,12 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
     networks:
       - blog-network
+      - my-network
 
 ## 미리 생성된 네트워크
 networks:
   blog-network:
+    external: true
+  my-network:
     external: true
 
