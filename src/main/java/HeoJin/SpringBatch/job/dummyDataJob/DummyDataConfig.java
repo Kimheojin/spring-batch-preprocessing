@@ -4,7 +4,6 @@ import HeoJin.SpringBatch.entity.dummyData.Post;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import HeoJin.SpringBatch.job.dummyDataJob.InitStep.InitTasklet;
 import HeoJin.SpringBatch.job.dummyDataJob.dummyDataProcessor.DummyDataProcessor;
-import HeoJin.SpringBatch.job.dummyDataJob.dummyDataReader.DummyDataReader;
 import HeoJin.SpringBatch.job.dummyDataJob.dummyDataWriter.DummyDataWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -12,10 +11,16 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.data.MongoCursorItemReader;
+import org.springframework.batch.item.data.builder.MongoCursorItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,9 +29,12 @@ public class DummyDataConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final InitTasklet initTasklet;
-    private final DummyDataReader dummyDataReader;
+    private final MongoTemplate mongoTemplate;
     private final DummyDataProcessor dummyDataProcessor;
     private final DummyDataWriter dummyDataWriter;
+
+    @Value("${recipe.deploy.rawDB}")
+    private String rawDataCollectionName;
 
     @Bean
     public Job dummyDataJob(){
@@ -47,12 +55,22 @@ public class DummyDataConfig {
     public Step dummyDataStep() {
         //Processor가 ItemStream 인터페이스를 구현하면, Step에 명시적으로 등록해야됨
         return new StepBuilder("dummyDataStep", jobRepository)
-                .<RawRecipe, List<Post>>chunk(100, transactionManager)
-                .reader(dummyDataReader)
+                .<RawRecipe, List<Post>>chunk(10, transactionManager)
+                .reader(dummyDataReader())
                 .processor(dummyDataProcessor)
                 .writer(dummyDataWriter)
-                .stream(dummyDataReader)
                 .stream(dummyDataProcessor)
+                .build();
+    }
+
+    @Bean
+    public MongoCursorItemReader<RawRecipe> dummyDataReader() {
+        return new MongoCursorItemReaderBuilder<RawRecipe>()
+                .name("dummyDataReader")
+                .template(mongoTemplate)
+                .collection(rawDataCollectionName)
+                .targetType(RawRecipe.class)
+                .sorts(Collections.singletonMap("_id", Sort.Direction.ASC))
                 .build();
     }
 }

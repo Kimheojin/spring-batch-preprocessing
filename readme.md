@@ -51,6 +51,13 @@ Spring Batch를 활용한 레시피 데이터 정제 및 더미 데이터 생성
 - 로그 파일 위치: `/app/logs/spring-batch.log`
 - Docekr Volume (바인드 마운트) 설정
 
+## 2024-12-20 성능 개선 사항 (DummyDataJob)
+- **Writer 최적화**: JPA `saveAll()` 대신 `JdbcTemplate.batchUpdate()`를 적용하여 대량 데이터 Insert 속도 비약적 향상 (N+1 ? 문제 해결).
+- **Reader 개선**: 커스텀 Reader 대신 `MongoCursorItemReader`를 사용하여 커서 기반 데이터 스트리밍 적용 (메모리 효율 증가).
+  - 청크 사이즈를 줄여서 트랜잭션을 잘게 쪼갤수록, 연결을 유지하고 쭉 읽어오는 Cursor 방식이 오버헤드가 적고 더 적합할거 같음
+    - 사실 별 차이 없
+- **Chunk Size 조정**: 데이터 증폭(Recipe 1개 -> Post 수백 개) 특성을 고려하여 Chunk Size를 100에서 10으로 축소 (OOM 방지 및 트랜잭션 안정성 확보).
+
 ## 참고사항
 
 - 처리 대상 데이터: 약 8,000개
