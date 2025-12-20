@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.post;
 
 public enum PostStatus {
     DRAFT,

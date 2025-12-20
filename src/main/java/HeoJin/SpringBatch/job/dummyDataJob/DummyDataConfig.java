@@ -1,6 +1,6 @@
 package HeoJin.SpringBatch.job.dummyDataJob;
 
-import HeoJin.SpringBatch.entity.dummyData.Post;
+import HeoJin.SpringBatch.entity.dummyData.post.Post;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import HeoJin.SpringBatch.job.dummyDataJob.InitStep.InitTasklet;
 import HeoJin.SpringBatch.job.dummyDataJob.dummyDataProcessor.DummyDataProcessor;
@@ -53,7 +53,6 @@ public class DummyDataConfig {
 
     @Bean
     public Step dummyDataStep() {
-        //Processor가 ItemStream 인터페이스를 구현하면, Step에 명시적으로 등록해야됨
         return new StepBuilder("dummyDataStep", jobRepository)
                 .<RawRecipe, List<Post>>chunk(10, transactionManager)
                 .reader(dummyDataReader())

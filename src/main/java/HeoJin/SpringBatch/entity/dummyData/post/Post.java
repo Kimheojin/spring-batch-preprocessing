@@ -1,5 +1,7 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.post;
 
+import HeoJin.SpringBatch.entity.dummyData.member.Member;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
 import jakarta.persistence.*;
 import lombok.*;
 

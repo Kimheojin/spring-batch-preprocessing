@@ -1,8 +1,8 @@
 package HeoJin.SpringBatch.job.dummyDataJob.InitStep;
 
-import HeoJin.SpringBatch.entity.dummyData.Category;
-import HeoJin.SpringBatch.entity.dummyData.Member;
-import HeoJin.SpringBatch.entity.dummyData.Role;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
+import HeoJin.SpringBatch.entity.dummyData.member.Member;
+import HeoJin.SpringBatch.entity.dummyData.member.Role;
 import HeoJin.SpringBatch.repository.CategoryRepository;
 import HeoJin.SpringBatch.repository.MemberRepository;
 import HeoJin.SpringBatch.repository.RoleRepository;

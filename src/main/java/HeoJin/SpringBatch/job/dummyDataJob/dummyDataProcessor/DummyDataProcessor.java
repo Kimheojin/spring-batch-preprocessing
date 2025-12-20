@@ -1,9 +1,9 @@
 package HeoJin.SpringBatch.job.dummyDataJob.dummyDataProcessor;
 
-import HeoJin.SpringBatch.entity.dummyData.Category;
-import HeoJin.SpringBatch.entity.dummyData.Member;
-import HeoJin.SpringBatch.entity.dummyData.Post;
-import HeoJin.SpringBatch.entity.dummyData.PostStatus;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
+import HeoJin.SpringBatch.entity.dummyData.member.Member;
+import HeoJin.SpringBatch.entity.dummyData.post.Post;
+import HeoJin.SpringBatch.entity.dummyData.post.PostStatus;
 import HeoJin.SpringBatch.entity.rawData.RawCookingOrder;
 import HeoJin.SpringBatch.entity.rawData.RawRecipe;
 import HeoJin.SpringBatch.repository.CategoryRepository;

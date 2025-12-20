@@ -1,6 +1,6 @@
 package HeoJin.SpringBatch.job.dummyDataJob.dummyDataWriter;
 
-import HeoJin.SpringBatch.entity.dummyData.Post;
+import HeoJin.SpringBatch.entity.dummyData.post.Post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemStreamWriter;
