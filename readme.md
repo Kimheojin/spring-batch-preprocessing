@@ -63,3 +63,8 @@ Spring Batch를 활용한 레시피 데이터 정제 및 더미 데이터 생성
 - 처리 대상 데이터: 약 8,000개
 - ID 기반 인덱스를 활용한 효율적인 데이터 읽기
 - Docker 환경 + Compose 지원
+
+---
+```aiexclude
+rsync -avzP -e "ssh -p 1225" spring-batch-preprocessing jin@heojineee.ddnsking.com:~/spring-batch-preprocessing
+```
