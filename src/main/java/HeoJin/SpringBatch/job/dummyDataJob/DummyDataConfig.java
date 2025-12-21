@@ -33,7 +33,7 @@ public class DummyDataConfig {
     private final DummyDataProcessor dummyDataProcessor;
     private final DummyDataWriter dummyDataWriter;
 
-    @Value("${recipe.deploy.rawDB}")
+    @Value("${spring.data.mongodb.collectionName}")
     private String rawDataCollectionName;
 
     @Bean
