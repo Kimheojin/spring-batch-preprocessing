@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +22,10 @@ public class BatchController {
 
     private final BatchRunner batchRunner;
 
+    @Qualifier("dummyDataJob")
     private final Job dummyDataJob;
-    private final Job processDataJob;
+    @Qualifier("processDataJob")
+    private final ObjectProvider<Job> processDataJobProvider;
 
     @GetMapping("/dummy")
     public ResponseEntity<String> runDummyDataJob(
@@ -38,9 +43,16 @@ public class BatchController {
 
     @GetMapping("/process")
     public ResponseEntity<String> runProcessDataJob() {
+        Job job = processDataJobProvider.getIfAvailable();
+
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("ProcessData Job 이 비활성화되어 있습니다.");
+        }
+
         try {
-            batchRunner.runJob(processDataJob);
-            return ResponseEntity.ok("Pr    ocessData Job 실행 성공");
+            batchRunner.runJob(job);
+            return ResponseEntity.ok("ProcessData Job 실행 성공");
         } catch (Exception e) {
             log.error("ProcessData Job 실행 실패", e);
             return ResponseEntity.internalServerError()

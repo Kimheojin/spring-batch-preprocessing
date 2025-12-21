@@ -14,6 +14,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.MongoCursorItemReader;
 import org.springframework.batch.item.data.builder.MongoCursorItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,11 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
+@ConditionalOnProperty(
+        name = "batch.jobs.dummy-data.enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class DummyDataConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;

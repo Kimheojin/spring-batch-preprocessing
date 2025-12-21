@@ -1,3 +1,15 @@
+batch:
+  jobs:
+    dummy-data:
+      enabled: true
+    process-data:
+      enabled: false
+    test:
+      mongo:
+        enabled: false
+      gemini:
+        enabled: false
+
 spring:
   profiles:
     active: mongo, gemini, prompt
@@ -39,10 +51,9 @@ spring:
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: false
     database-platform: org.hibernate.dialect.MySQL8Dialect
-
 
 
 

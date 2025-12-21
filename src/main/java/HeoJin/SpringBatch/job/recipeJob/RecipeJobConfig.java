@@ -15,6 +15,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -24,6 +25,10 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        name = "batch.jobs.process-data.enabled",
+        havingValue = "true"
+)
 public class RecipeJobConfig {
 
     private final JobRepository jobRepository;
