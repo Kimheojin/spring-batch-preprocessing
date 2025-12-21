@@ -1,6 +1,6 @@
 package HeoJin.SpringBatch.repository;
 
-import HeoJin.SpringBatch.entity.dummyData.Category;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

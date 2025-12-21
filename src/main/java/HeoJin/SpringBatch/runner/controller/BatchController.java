@@ -23,9 +23,11 @@ public class BatchController {
     private final Job processDataJob;
 
     @GetMapping("/dummy")
-    public ResponseEntity<String> runDummyDataJob() {
+    public ResponseEntity<String> runDummyDataJob(
+            @RequestParam String tag
+    ) {
         try {
-            batchRunner.runJob(dummyDataJob);
+            batchRunner.runJobWithTag(dummyDataJob, tag);
             return ResponseEntity.ok("DummyData Job 실행 성공");
         } catch (Exception e) {
             log.error("DummyData Job 실행 실패", e);
@@ -38,7 +40,7 @@ public class BatchController {
     public ResponseEntity<String> runProcessDataJob() {
         try {
             batchRunner.runJob(processDataJob);
-            return ResponseEntity.ok("ProcessData Job 실행 성공");
+            return ResponseEntity.ok("Pr    ocessData Job 실행 성공");
         } catch (Exception e) {
             log.error("ProcessData Job 실행 실패", e);
             return ResponseEntity.internalServerError()

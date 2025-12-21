@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.tag;
 
 
 import jakarta.persistence.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "post_tag")
+@Table(name = "post_tag", catalog = "test-database")
 public class PostTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

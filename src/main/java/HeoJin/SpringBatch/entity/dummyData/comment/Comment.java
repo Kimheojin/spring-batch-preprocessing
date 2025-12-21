@@ -1,5 +1,6 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.comment;
 
+import HeoJin.SpringBatch.entity.dummyData.post.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

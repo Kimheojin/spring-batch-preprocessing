@@ -1,8 +1,9 @@
 package HeoJin.SpringBatch.job.dummyDataJob.InitStep;
 
-import HeoJin.SpringBatch.entity.dummyData.Category;
-import HeoJin.SpringBatch.entity.dummyData.Member;
-import HeoJin.SpringBatch.entity.dummyData.Role;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
+import HeoJin.SpringBatch.entity.dummyData.member.Member;
+import HeoJin.SpringBatch.entity.dummyData.member.Role;
+import HeoJin.SpringBatch.entity.dummyData.tag.Tag;
 import HeoJin.SpringBatch.repository.CategoryRepository;
 import HeoJin.SpringBatch.repository.MemberRepository;
 import HeoJin.SpringBatch.repository.RoleRepository;
@@ -24,6 +25,7 @@ public class InitTasklet implements Tasklet {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final CategoryRepository categoryRepository;
+    private final HeoJin.SpringBatch.repository.TagRepository tagRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -53,20 +55,40 @@ public class InitTasklet implements Tasklet {
         }
 
         initCategory();
+        initTag();
 
         return RepeatStatus.FINISHED;
     }
 
     private void initCategory() {
         long currentCount = categoryRepository.count();
+        final int TARGET_COUNT = 100;
 
-        if(currentCount < 50) {
-            log.info("카테고리 {}개 -> 50개로 확장", currentCount);
-            for (int i = (int)currentCount; i < 50; i++) {
+        if(currentCount < TARGET_COUNT) {
+            log.info("카테고리 {}개 -> {}개로 확장", currentCount, TARGET_COUNT);
+            for (int i = (int)currentCount; i < TARGET_COUNT; i++) {
                 categoryRepository.save(Category.builder()
                         .categoryName("카테고리" + (i + 1))
                         .priority((long) i)
                         .build());
+            }
+        }
+    }
+
+    private void initTag() {
+        long currentCount = tagRepository.count();
+        final int TARGET_COUNT = 50;
+
+        if (currentCount < TARGET_COUNT) {
+            log.info("태그 {}개 -> {}개로 확장", currentCount, TARGET_COUNT);
+            for (int i = (int) currentCount; i < TARGET_COUNT; i++) {
+                try {
+                    tagRepository.save(Tag.builder()
+                            .tagName("태그" + (i + 1))
+                            .build());
+                } catch (Exception e) {
+                    log.warn("태그 저장 중 오류 발생 (중복 등): {}", e.getMessage());
+                }
             }
         }
     }

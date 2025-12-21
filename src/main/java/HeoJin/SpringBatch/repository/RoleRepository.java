@@ -1,7 +1,7 @@
 package HeoJin.SpringBatch.repository;
 
 
-import HeoJin.SpringBatch.entity.dummyData.Role;
+import HeoJin.SpringBatch.entity.dummyData.member.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

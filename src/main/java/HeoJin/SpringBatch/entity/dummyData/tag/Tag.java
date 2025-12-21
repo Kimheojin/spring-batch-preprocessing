@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.tag;
 
 
 import jakarta.persistence.*;
@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(catalog = "test-database")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

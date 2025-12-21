@@ -1,5 +1,7 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.post;
 
+import HeoJin.SpringBatch.entity.dummyData.member.Member;
+import HeoJin.SpringBatch.entity.dummyData.category.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +42,10 @@ public class Post {
     @Column(nullable = false)
     @Builder.Default
     private PostStatus status = PostStatus.PRIVATE; // 비공개 디폴트
+
+    @Transient
+    @Setter
+    private java.util.List<Long> tagIds;
 
     public void changeStatus(PostStatus status) {
         this.status = status;

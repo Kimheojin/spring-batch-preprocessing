@@ -1,4 +1,4 @@
-package HeoJin.SpringBatch.entity.dummyData;
+package HeoJin.SpringBatch.entity.dummyData.comment;
 
 public enum CommentStatus {
     ACTIVE,        // 활성
