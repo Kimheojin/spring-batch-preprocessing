@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(catalog = "test-database")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

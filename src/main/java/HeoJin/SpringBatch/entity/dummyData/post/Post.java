@@ -43,6 +43,10 @@ public class Post {
     @Builder.Default
     private PostStatus status = PostStatus.PRIVATE; // 비공개 디폴트
 
+    @Transient
+    @Setter
+    private java.util.List<Long> tagIds;
+
     public void changeStatus(PostStatus status) {
         this.status = status;
     }

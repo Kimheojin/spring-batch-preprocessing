@@ -1,27 +1,26 @@
 package HeoJin.SpringBatch.job.dummyDataJob.dummyDataWriter;
 
 import HeoJin.SpringBatch.entity.dummyData.post.Post;
+import HeoJin.SpringBatch.entity.dummyData.tag.PostTag;
+import HeoJin.SpringBatch.repository.PostRepository;
+import HeoJin.SpringBatch.repository.PostTagRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DummyDataWriter implements ItemStreamWriter<List<Post>> {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public DummyDataWriter(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    private final PostRepository postRepository;
+    private final PostTagRepository postTagRepository;
 
     @Override
     public void write(Chunk<? extends List<Post>> chunk) throws Exception {
@@ -34,21 +33,27 @@ public class DummyDataWriter implements ItemStreamWriter<List<Post>> {
             return;
         }
 
-        String sql = "INSERT INTO post (title, content, reg_date, status, category_id, member_id) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        // JPA 사용: Post 저장 (ID 생성됨)
+        // saveAll은 내부적으로 loop 돌면서 insert 하지만 트랜잭션 안에서 수행됨
+        List<Post> savedPosts = postRepository.saveAll(allPosts);
+        
+        // PostTag 생성 및 저장
+        List<PostTag> allPostTags = new ArrayList<>();
+        for (Post post : savedPosts) {
+            if (post.getTagIds() != null && !post.getTagIds().isEmpty()) {
+                for (Long tagId : post.getTagIds()) {
+                    allPostTags.add(PostTag.builder()
+                            .postId(post.getId())
+                            .tagId(tagId)
+                            .build());
+                }
+            }
+        }
+        
+        if (!allPostTags.isEmpty()) {
+            postTagRepository.saveAll(allPostTags);
+        }
 
-        jdbcTemplate.batchUpdate(sql,
-                allPosts,
-                allPosts.size(),
-                (PreparedStatement ps, Post post) -> {
-                    ps.setString(1, post.getTitle());
-                    ps.setString(2, post.getContent());
-                    ps.setTimestamp(3, Timestamp.valueOf(post.getRegDate()));
-                    ps.setString(4, post.getStatus().name());
-                    ps.setLong(5, post.getCategory().getId());
-                    ps.setLong(6, post.getMember().getId());
-                });
-
-        log.info("JDBC Batch Insert 완료: {}건", allPosts.size());
+        log.info("JPA Insert 완료: Post {}건, PostTag {}건", savedPosts.size(), allPostTags.size());
     }
 }
