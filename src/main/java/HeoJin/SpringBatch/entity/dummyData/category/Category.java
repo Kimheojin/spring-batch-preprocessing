@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @Getter
 @AllArgsConstructor
-@Table(catalog = "test-database")
+@Table(catalog = "spring_test_database")
 public class Category {
 
     @Id

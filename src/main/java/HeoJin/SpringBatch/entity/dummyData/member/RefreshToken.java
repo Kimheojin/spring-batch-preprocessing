@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "refresh_token")
+@Table(name = "refresh_token", catalog = "spring_test_database")
 public class RefreshToken {
 
     @Id

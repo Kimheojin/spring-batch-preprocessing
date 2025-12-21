@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(catalog = "test-database")
+@Table(catalog = "spring_test_database")
 public class Member {
 
     @Id

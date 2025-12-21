@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "post_tag", catalog = "test-database")
+@Table(name = "post_tag", catalog = "spring_test_database")
 public class PostTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

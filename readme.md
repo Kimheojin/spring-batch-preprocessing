@@ -66,5 +66,5 @@ Spring Batch를 활용한 레시피 데이터 정제 및 더미 데이터 생성
 
 ---
 ```aiexclude
-rsync -avzP -e "ssh -p 1225" spring-batch-preprocessing jin@heojineee.ddnsking.com:~/spring-batch-preprocessing
+rsync -avzP -e "ssh -p 포트번호" spring-batch-preprocessing jin@heojineee.ddnsking.com:~/spring-batch-preprocessing
 ```

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(catalog = "test-database")
+@Table(catalog = "spring_test_database")
 public class Comment {
 
     @Id
