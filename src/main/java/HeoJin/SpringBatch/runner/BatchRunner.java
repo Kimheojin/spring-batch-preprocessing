@@ -25,8 +25,18 @@ public class BatchRunner {
                     .toJobParameters();
         }
 
+
         jobLauncher.run(job, params);
         log.info("Job 실행 완료: {}", job.getName());
+    }
+
+
+    public void runJobWithTag(Job job, String tag) throws Exception {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("tag", tag)
+                .toJobParameters();
+
+        runJob(job, jobParameters);
     }
 
 
