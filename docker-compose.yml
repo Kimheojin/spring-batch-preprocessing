@@ -17,12 +17,7 @@ services:
       - LOGGING_FILE_PATH=/app/logs
       # 타임존 설정
       - TZ=Asia/Seoul
-      ## mysql 관련 설정
-      ## 일회용이라 노출해도 될듯
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container:3306/batch
-      - SPRING_DATASOURCE_USERNAME=Bash
-      - SPRING_DATASOURCE_PASSWORD=1234
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
     networks:
       - blog-network
 

@@ -12,7 +12,7 @@ batch:
 
 spring:
   profiles:
-    active: mongo, gemini, prompt
+    active: mongo, gemini, prompt, mysql
     ## docker 가 우선순위가 높음
     ## 덮어써서 그런듯
 
@@ -51,7 +51,7 @@ spring:
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     show-sql: false
     database-platform: org.hibernate.dialect.MySQL8Dialect
 

@@ -1,0 +1,20 @@
+# Version-control metadata
+.git
+.gitignore
+
+# Local Gradle caches and build outputs
+.gradle
+build/
+**/build/
+
+# IDE settings and project files
+.idea/
+*.iml
+
+# Runtime artifacts
+logs/
+*.log
+
+# Environment/config files not needed in the image
+.env
+docker-compose.yml
