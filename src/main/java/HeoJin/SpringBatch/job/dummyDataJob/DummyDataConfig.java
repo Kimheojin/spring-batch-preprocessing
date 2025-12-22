@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Collections;
@@ -75,6 +76,7 @@ public class DummyDataConfig {
                 .template(mongoTemplate)
                 .collection(rawDataCollectionName)
                 .targetType(RawRecipe.class)
+                .query(new Query())
                 .sorts(Collections.singletonMap("_id", Sort.Direction.ASC))
                 .build();
     }
