@@ -71,3 +71,7 @@ spring-batch-preprocessing \
 jin@heojineee.ddnsking.com:~/spring-batch-preprocessing
 
 ```
+
+rsync -avzP -e "ssh -i ~/.ssh/id_ed25519_server" \
+spring-batch-preprocessing \
+jin@192.168.219.106:~/spring-batch-preprocessing

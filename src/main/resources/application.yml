@@ -1,3 +1,6 @@
+server:
+  port: 9030
+
 batch:
   jobs:
     dummy-data:
