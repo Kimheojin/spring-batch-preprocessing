@@ -2,17 +2,17 @@
 
 - 본 프로젝트는 대규모 레시피 데이터를 정제 Job, 더미데이터 Job 등을 구현한 프로젝트
 
-## 프로젝트 주요 구조
+## 1. 프로젝트 주요 구조
 
 ![Architecture Overview](docs/MermaidDiagramLayout.png)
 
-## Job 별 주요 구현 내용
+## 2. Job 별 주요 구현 내용
 
-### RecipeJob
+### 1) RecipeJob
 
 원본 레시피 데이터(크롤링 데이터)의 불완전성을 Gemini AI(Gemma 3)로 보완하고 구조화된 데이터로 정제
 
-#### Reader: `MongoPagingItemReader`
+#### 1-1) Reader: `MongoPagingItemReader`
 
 - **구현**:  흔히 사용하는 Offset 방식(`skip`, `limit`), 커서 방식 대신 **No-Offset(Keyset)** 방식을 구현
   - **Gemma3**모델(무료 모델) 특성 상 요청 term 을 가져야 하므로
@@ -20,12 +20,12 @@
 - **performance**: 마지막 처리된 `_id`를 기준으로 인덱스 스캔(`gt`)을 수행하여 데이터 양이 늘어나도 조회 속도가 일정하게 유지
 - **Chunk 전략**: DB 조회는 효율을 위해 100개(`PAGE_SIZE`)씩 수행하지만, Processor로는 2개(`PAIR_SIZE`)씩 전달하여 AI 모델의 Context Window 효율 최적화
 
-#### Processor: `GeminiRecipeProcessor`
+#### 1-2) Processor: `GeminiRecipeProcessor`
 
 - **Logic**: 2개의 레시피를 하나의 프롬프트로 병합 처리하여 API 호출 비용 최적화
 - Gemma 3 모델의 Rate Limit(무료 제한)을 준수하기 위해 처리 로직 내에 `Thread.sleep`을 적용, 안정적인 파이프라인을 구축
 
-#### Writer: `MongoRecipeWriter`
+#### 1-3) Writer: `MongoRecipeWriter`
 
 - Chunk로 넘어온 데이터 뭉치를 Stream 처리
 
