@@ -8,7 +8,7 @@
 
 ## 2. Job 별 주요 구현 내용
 
-### 1) RecipeJob
+### 1 ) RecipeJob
 
 원본 레시피 데이터(크롤링 데이터)의 불완전성을 Gemini AI(Gemma 3)로 보완하고 구조화된 데이터로 정제
 
