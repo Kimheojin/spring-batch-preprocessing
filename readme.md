@@ -12,7 +12,7 @@
 
 원본 레시피 데이터(크롤링 데이터)의 불완전성을 Gemini AI(Gemma 3)로 보완하고 구조화된 데이터로 정제
 
-#### 1-1) Reader: `MongoPagingItemReader`
+#### 1_1) Reader: `MongoPagingItemReader`
 
 - **구현**:  흔히 사용하는 Offset 방식(`skip`, `limit`), 커서 방식 대신 **No-Offset(Keyset)** 방식을 구현
   - **Gemma3**모델(무료 모델) 특성 상 요청 term 을 가져야 하므로
