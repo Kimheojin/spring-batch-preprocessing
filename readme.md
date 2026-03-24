@@ -4,9 +4,9 @@
 
 ## 주요 아키텍처 요약
 
-![Spring Batch 아키텍처](https://res.cloudinary.com/dtrxriyea/image/upload/v1774090549/etc/c7nij7l3wunot5ftzhqa.avif)
+![Spring Batch Job 주요 아키텍처](https://res.cloudinary.com/dtrxriyea/image/upload/v1774090549/etc/c7nij7l3wunot5ftzhqa.avif)
 
-## Job 별 주요 구현 내용
+## Job 별 구현 내용
 
 ### RecipeJob
 
@@ -19,16 +19,35 @@
 
 ##### Reader : `MongoPagingItemReader`
 
-- **구현**:  흔히 사용하는 Offset 방식(`skip`, `limit`), 커서 방식 대신 **No-Offset(Keyset)** 방식을 구현
-  - `Gemma3`모델(무료 모델) 특성 상 요청 term 을 가져야 하므로
-  - **ExecutionContext** 이용 구현
-- **performance**: 마지막 처리된 `_id`를 기준으로 인덱스 스캔(`gt`)을 수행하여 데이터 양이 늘어나도 조회 속도가 일정하게 유지
-- **Chunk 전략**: DB 조회는 효율을 위해 100개(`PAGE_SIZE`)씩 수행하지만, Processor로는 2개(`PAIR_SIZE`)씩 전달하여 AI 모델의 Context Window 효율 최적화
+- **구현**: No-Offset(Keyset) 기반 직접적인 상태 관리 (`ExecutionContext` 활용)
+  - `Gemma3` 모델 특성 상 요청 간 term 유지를 위해 서버가 마지막 처리 위치를 직접 관리
+  
+```java
+public void open(ExecutionContext executionContext) { lastProcessedId = executionContext.getString("last.processed.id"); }
+public void update(ExecutionContext executionContext) { executionContext.putString("last.processed.id", lastProcessedId); }
+```
+  
+- **Performance**: `_id` 기준 인덱스 스캔(`gt`)으로 데이터 양과 무관하게 조회 속도 일정 유지
+
+```java
+query.addCriteria(Criteria.where("_id").gt(new ObjectId(lastProcessedId)));
+query.limit(PAGE_SIZE); // 100개씩 벌크 로드
+```
+
+- **Chunk 전략**: DB 조회(100) vs Processor 전달(2) 분리하여 AI 모델의 Context Window 효율 최적화
+  - Reader에서 2개씩 묶어 반환하며, Chunk Size를 10으로 설정하여 한 트랜잭션당 총 20개의 레시피를 일괄 처리 및 적재
+
+```java
+// PAIR_SIZE(2)만큼 묶어서 Processor로 전달
+for (int i = 0; i < PAIR_SIZE && currentIndex < currentBatch.size(); i++) {
+    batch.add(currentBatch.get(currentIndex++));
+}
+```
 
 ##### Processor: `GeminiRecipeProcessor`
 
 - 2개의 레시피를 하나의 프롬프트로 병합 처리하여 API 호출 비용 최적화
-- `Gemma3` 모델의 Rate Limit(무료 제한)을 준수하기 위해 처리 로직 내에 `Thread.sleep`을 적용, 안정적인 파이프라인을 구축
+- `Gemma3` 모델의 Rate Limit(무료 제한)을 준수하기 위해 처리 로직 내에 `Thread.sleep(30000)`을 적용, 안정적인 파이프라인을 구축
 
 ##### Writer: `MongoRecipeWriter`
 
@@ -54,40 +73,112 @@
 
 ##### `InitStep` (Tasklet)
 
-- `DummyDataProcessor`가 의존하는 메타데이터(Member, Category, Tag) 자동 생성 및 DB 상태 동기화
+- 본 작업 실행 전 Member, Category, Tag 등 기초 메타데이터를 우선 생성 및 DB 동기화
 
-##### Reader: `MongoCursorItemReader`
+```java
+// 관리자 계정, 카테고리(100개), 태그(50개) 자동 생성 및 동기화
+@Override
+public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    if(memberRepository.findByEmail("hurjin1109@naver.com").isEmpty()){
+        // 관리자 계정 및 ADMIN Role 생성 로직
+        memberRepository.save(Member.builder().email("hurjin1109@naver.com").role(adminRole).build());
+    }
+    initCategory(); // 목표치(100개)까지 카테고리 자동 생성
+    initTag();      // 목표치(50개)까지 태그 자동 생성
+    return RepeatStatus.FINISHED;
+}
+```
 
-- DB 커서를 유지하는 스트리밍 방식을 채택하여 대용량 처리 시 OOM(Out Of Memory) 방지
+##### Reader: `MongoPagingItemReader`
+
+- 페이징 기반 조회를 통해 대용량 데이터 처리 시 메모리 점유율 최소화 (OOM 방지) 및 안정적인 데이터 로드
+
+```java
+// MongoPagingItemReaderBuilder를 통한 페이징 조회 설정
+return new MongoPagingItemReaderBuilder<RawRecipe>()
+        .name("dummyDataReader").template(mongoTemplate)
+        .targetType(RawRecipe.class).jsonQuery("{}")
+        .sorts(Collections.singletonMap("_id", Sort.Direction.ASC))
+        .pageSize(10).build();
+```
 
 ##### Processor: `DummyDataProcessor`
 
-- **캐싱 처리**: `ItemStream.open()` 시점에 자주 사용되는 메타 데이터(Category, Tag, Member)를 메모리에 캐싱 반복적 I/O 제거
-- **비지니스 로직**: 1개의 Recipe에 포함된 **각 조리 순서(Step)마다 100개씩** Post를 생성하여 대량의 데이터로 증폭 반환 (1 Input -> N * 100 Outputs)
+- `ItemStream.open()` 단계에서 자주 참조되는 도메인 엔티티(회원, 카테고리 등)를 메모리에 캐싱하여 DB 부하 최소화
+
+```java
+@Override
+public void open(ExecutionContext executionContext) {
+    // Step 시작 시 1회만 로딩하여 메모리에 캐싱 (DB 부하 최소화)
+    categories = categoryRepository.findAll();
+    allTagIds = tagRepository.findAll().stream()
+            .map(Tag::getId).collect(Collectors.toList());
+    defaultMember = memberRepository.findByEmail("hurjin1109@naver.com").orElseThrow();
+}
+```
 
 ##### Writer: `DummyDataWriter`
 
-- **Batch Save**: 병합된 리스트를 JPA `saveAll()`로 일괄 저장하여 DB 커넥션 오버헤드를 감소
-- Post 저장 후 생성된 ID를 활용, 연관 테이블(PostTag) 데이터까지 동일 트랜잭션 내에서 처리
+- `saveAll()`을 활용하여 다수의 엔티티를 일괄 저장하여 쓰기 성능 확보
+- `Post` 저장 후 생성된 ID를 직접 매핑하여 `PostTag`를 벌크 저장함으로써, 연관관계 매핑 시 발생하는 N+1 Select 및 개별 Insert 오버헤드 방지
 
----
-## 예외 처리 및 스킵 전략
+```java
+@Override
+public void write(Chunk<? extends List<Post>> chunk) throws Exception {
+    List<Post> posts = chunk.getItems().stream().flatMap(List::stream).toList();
+    List<Post> savedPosts = postRepository.saveAll(posts);
+
+    // 저장된 Post ID를 활용한 PostTag 벌크 생성 및 저장
+    List<PostTag> tags = savedPosts.stream()
+            .flatMap(p -> p.getTagIds().stream().map(tId -> PostTag.builder().postId(p.getId()).tagId(tId).build()))
+            .toList();
+
+    if (!tags.isEmpty()) postTagRepository.saveAll(tags);
+}
+```
+
+
+## 예외 처리 및 장애 대응 전략
 
 ### Skip 전략
-- 일시적인 API 호출 오류(Gemma 3)나 특정 데이터 포맷 결함 발생 시, 전체 작업 중단 없이 해당 아이템만 Skip 처리
-- 안정성 확보: 대량 데이터 처리 중 발생하는 예외 상황에 유연하게 대응하여 파이프라인의 가용성 극대화
-### 비즈니스 에러 로깅 (BatchError)
-- 관심사의 분리: Spring Batch 프레임워크의 실행 이력(Meta-data)과 실제 비즈니스 데이터의 결함(Domain Error)을 별도 테이블로 분리 관리
-- 데이터 정체성 유지: 개별 에러 로그 테이블 운용을 통해 비즈니스 도메인 데이터의 무결성 및 추적성 확보
-### 모니터링 및 재시도 전략
-- 장애 추적성: Skip된 아이템의 상세 사유를 `BatchError` 엔티티에 기록하여 사후 데이터 보정 및 원인 파악 지원
-- (여기에 추가하고 싶은 세부 전략이 있다면 직접 채워보세요!)
 
+- API 호출(Gemma 3) 오류나 데이터 포맷 결함 발생 시 전체 중단 없이 해당 아이템만 Skip 처리
+- `SkipListener`를 통해 실패 지점(Reader, Processor, Writer)별 예외 상황을 독립적으로 제어
+
+```java
+@Override
+public void onSkipInProcess(List<RawRecipe> items, Throwable t) {
+    for (RawRecipe item : items) {
+        // 실패한 아이템의 메타데이터(URL, Index)를 추출하여 에러 로그 기록
+        BatchError error = BatchError.builder()
+                .sourceUrl(item.getSourceUrl())
+                .siteIndex(item.getSiteIndex())
+                .build();
+        batchErrorRepository.save(error);
+    }
+}
+```
+
+### 비즈니스 에러 로깅 (`BatchError`)
+
+- Spring Batch 메타데이터와 도메인 에러 데이터를 별도 테이블로 분리 관리
+- Skip된 아이템의 상세 정보를 `BatchError` 엔티티에 기록하여 사후 데이터 보정 및 원인 파악 지원
+
+```java
+@Entity
+public class BatchError {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String sourceUrl; // 원본 데이터 위치
+    private String siteIndex; // 정제 실패 지점 식별자
+}
+```
 
 ## 기술 스택
 
-Batch Framework: Spring Batch 5
-Language: Java 17
-Database: MongoDB, MySQL
-AI: Google Gemini (Gemma 3)
-Infra: Docker, Docker Compose
+- **Framework**: Spring Boot 3.5.4, Spring Batch 5.x
+- **Language**: Java 17
+- **Database**: MongoDB (데이터 적재/정제), MySQL (도메인/메타데이터), H2 (테스트 환경)
+- **AI/LLM**: Gemini API (Gemma 3)
+- **Infra/DevOps**: Docker, Docker Compose, Gradle 8.x
+- **Core Library**: Spring Data JPA, Spring Data MongoDB, Lombok, Apache HttpClient5
