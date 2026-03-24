@@ -24,8 +24,8 @@ public class BatchController {
 
     @Qualifier("dummyDataJob")
     private final Job dummyDataJob;
-    @Qualifier("processDataJob")
-    private final ObjectProvider<Job> processDataJobProvider;
+    @Qualifier("recipeJob")
+    private final ObjectProvider<Job> recipeJobProvider;
 
     @GetMapping("/dummy")
     public ResponseEntity<String> runDummyDataJob(
@@ -41,22 +41,22 @@ public class BatchController {
         }
     }
 
-    @GetMapping("/process")
-    public ResponseEntity<String> runProcessDataJob() {
-        Job job = processDataJobProvider.getIfAvailable();
+    @GetMapping("/recipe")
+    public ResponseEntity<String> runRecipeJob() {
+        Job job = recipeJobProvider.getIfAvailable();
 
         if (job == null) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body("ProcessData Job 이 비활성화되어 있습니다.");
+                    .body("Recipe Job 이 비활성화되어 있습니다.");
         }
 
         try {
             batchRunner.runJob(job);
-            return ResponseEntity.ok("ProcessData Job 실행 성공");
+            return ResponseEntity.ok("Recipe Job 실행 성공");
         } catch (Exception e) {
-            log.error("ProcessData Job 실행 실패", e);
+            log.error("Recipe Job 실행 실패", e);
             return ResponseEntity.internalServerError()
-                    .body("ProcessData Job 실행 실패: " + e.getMessage());
+                    .body("Recipe Job 실행 실패: " + e.getMessage());
         }
     }
 

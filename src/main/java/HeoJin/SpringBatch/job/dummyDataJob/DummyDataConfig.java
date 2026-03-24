@@ -11,19 +11,20 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.data.MongoCursorItemReader;
-import org.springframework.batch.item.data.builder.MongoCursorItemReaderBuilder;
+import org.springframework.batch.item.data.MongoPagingItemReader;
+import org.springframework.batch.item.data.builder.MongoPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
@@ -45,7 +46,7 @@ public class DummyDataConfig {
 
     @Bean
     public Job dummyDataJob(){
-        return new JobBuilder("dummyDataJob4", jobRepository)
+        return new JobBuilder("dummyDataJob", jobRepository)
                 .start(initStep())
                 .next(dummyDataStep())
                 .build();
@@ -70,14 +71,18 @@ public class DummyDataConfig {
     }
 
     @Bean
-    public MongoCursorItemReader<RawRecipe> dummyDataReader() {
-        return new MongoCursorItemReaderBuilder<RawRecipe>()
+    public MongoPagingItemReader<RawRecipe> dummyDataReader() {
+        Map<String, Sort.Direction> sorts = new HashMap<>();
+        sorts.put("_id", Sort.Direction.ASC);
+
+        return new MongoPagingItemReaderBuilder<RawRecipe>()
                 .name("dummyDataReader")
                 .template(mongoTemplate)
                 .collection(rawDataCollectionName)
                 .targetType(RawRecipe.class)
-                .query(new Query())
-                .sorts(Collections.singletonMap("_id", Sort.Direction.ASC))
+                .jsonQuery("{}")
+                .sorts(sorts)
+                .pageSize(10)
                 .build();
     }
 }

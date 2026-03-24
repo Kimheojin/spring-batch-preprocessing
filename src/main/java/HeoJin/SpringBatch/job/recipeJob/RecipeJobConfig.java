@@ -33,7 +33,7 @@ public class RecipeJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final MongoPagingItemReader mongoCursorItemReader;
+    private final MongoPagingItemReader mongoPagingItemReader;
     private final GeminiRecipeProcessor geminiRecipeProcessor;
     private final MongoRecipeWriter mongoRecipeWriter;
     private final ProcessorSkipListener processorSkipListener;
@@ -42,18 +42,18 @@ public class RecipeJobConfig {
 
 
     @Bean
-    public Job processDataJob() {
-        return new JobBuilder("processDataJob3", jobRepository)
-                .start(processDataStep())
+    public Job recipeJob() {
+        return new JobBuilder("recipeJob", jobRepository)
+                .start(recipeStep())
                 .build();
     }
 
     @Bean
-    public Step processDataStep() {
+    public Step recipeStep() {
         // 청크 방식으로
-        return new StepBuilder("processDataStep", jobRepository)
+        return new StepBuilder("recipeStep", jobRepository)
                 .<List<RawRecipe>, List<ProcessedRecipe>>chunk(10, transactionManager)
-                .reader(mongoCursorItemReader)
+                .reader(mongoPagingItemReader)
                 .processor(geminiRecipeProcessor)
                 .writer(mongoRecipeWriter)
                 .taskExecutor(new SyncTaskExecutor()) // 단일 쓰레드  동기 실행 강제
