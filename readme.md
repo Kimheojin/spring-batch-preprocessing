@@ -23,11 +23,20 @@
   - `Gemma3` 모델 특성 상 요청 간 term 유지를 위해 서버가 마지막 처리 위치를 직접 관리
   
 ```java
-public void open(ExecutionContext executionContext) { lastProcessedId = executionContext.getString("last.processed.id"); }
-public void update(ExecutionContext executionContext) { executionContext.putString("last.processed.id", lastProcessedId); }
+private static final String LAST_PROCESSED_ID = "last.processed.id";
+
+@Override
+public void open(ExecutionContext executionContext) {
+    this.lastProcessedId = executionContext.getString(LAST_PROCESSED_ID);
+}
+
+@Override
+public void update(ExecutionContext executionContext) {
+    executionContext.putString(LAST_PROCESSED_ID, lastProcessedId);
+}
 ```
   
-- **Performance**: `_id` 기준 인덱스 스캔(`gt`)으로 데이터 양과 무관하게 조회 속도 일정 유지
+- **Performance**: `_id` 기준 인덱스 스캔(`gt`)으로 데이터 양과 무관하게 조회 속도 유지
 
 ```java
 query.addCriteria(Criteria.where("_id").gt(new ObjectId(lastProcessedId)));
@@ -120,7 +129,8 @@ public void open(ExecutionContext executionContext) {
 ##### Writer: `DummyDataWriter`
 
 - `saveAll()`을 활용하여 다수의 엔티티를 일괄 저장하여 쓰기 성능 확보
-- `Post` 저장 후 생성된 ID를 직접 매핑하여 `PostTag`를 벌크 저장함으로써, 연관관계 매핑 시 발생하는 N+1 Select 및 개별 Insert 오버헤드 방지
+- `Post` 저장 후 생성된 ID를 직접 매핑하여 `PostTag`를 벌크 저장
+  - 연관관계 매핑 시 발생하는 N+1 Select 및 개별 Insert 오버헤드 방지
 
 ```java
 @Override
